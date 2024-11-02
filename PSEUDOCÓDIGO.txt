@@ -1,0 +1,127 @@
+INICIO
+
+DECLARAR usuarios COMO lista de diccionarios
+DECLARAR productos COMO lista de diccionarios
+DECLARAR ventas COMO lista vacía
+
+FUNCIÓN iniciar_sesion(nombre, contraseña)
+    PARA CADA usuario EN usuarios
+        SI usuario.nombre ES IGUAL A nombre Y usuario.contraseña ES IGUAL A contraseña
+            RETORNAR usuario.rol
+        FIN SI
+    FIN PARA
+    RETORNAR NULL
+FIN FUNCIÓN
+
+FUNCIÓN registrar_usuario(nombre, contraseña, rol)
+    nuevo_id ← longitud(usuarios) + 1
+    AÑADIR {id: nuevo_id, nombre: nombre, contraseña: contraseña, rol: rol} A usuarios
+    IMPRIMIR "Usuario " + nombre + " registrado con éxito."
+FIN FUNCIÓN
+
+FUNCIÓN agregar_actualizar_producto(id_producto, nombre, precio_compra, precio_venta, cantidad, unidad)
+    PARA CADA producto EN productos
+        SI producto.id ES IGUAL A id_producto
+            ACTUALIZAR producto con los nuevos valores
+            IMPRIMIR "Producto " + nombre + " actualizado con éxito."
+            RETORNAR
+        FIN SI
+    FIN PARA
+    AÑADIR nuevo producto A productos
+    IMPRIMIR "Producto " + nombre + " agregado con éxito."
+FIN FUNCIÓN
+
+FUNCIÓN consultar_inventario(codigo OPCIONAL)
+    SI codigo EXISTE
+        BUSCAR producto POR id
+        SI producto ES ENCONTRADO
+            IMPRIMIR detalles del producto
+        SINO
+            IMPRIMIR "Producto con código " + codigo + " no encontrado."
+    SINO
+        PARA CADA producto EN productos
+            IMPRIMIR detalles del producto
+        FIN PARA
+    FIN SI
+FIN FUNCIÓN
+
+FUNCIÓN vender_producto(codigo, cantidad)
+    BUSCAR producto POR id
+    SI producto ES ENCONTRADO
+        SI producto.cantidad ES MAYOR O IGUAL A cantidad
+            RESTAR cantidad DEL inventario de producto
+            AÑADIR registro de venta A ventas
+            IMPRIMIR "Venta realizada..."
+        SINO
+            IMPRIMIR "Cantidad insuficiente en inventario."
+    SINO
+        IMPRIMIR "Producto con código " + codigo + " no encontrado."
+FIN FUNCIÓN
+
+FUNCIÓN comprar_producto(codigo, cantidad)
+    BUSCAR producto POR id
+    SI producto ES ENCONTRADO
+        SUMAR cantidad AL inventario de producto
+        IMPRIMIR "Se ha agregado " + cantidad + " unidades de " + producto.nombre
+    SINO
+        IMPRIMIR "Producto con código " + codigo + " no encontrado."
+FIN FUNCIÓN
+
+FUNCIÓN resumen_ventas()
+    total ← 0
+    PARA CADA venta EN ventas
+        OBTENER producto CORRESPONDIENTE
+        SI producto EXISTE
+            IMPRIMIR detalles de la venta
+            SUMAR total_venta AL total
+    FIN PARA
+    IMPRIMIR "Total generado por ventas: " + total
+FIN FUNCIÓN
+
+FUNCIÓN menu_principal()
+    IMPRIMIR "Bienvenido al sistema de inventario 'Shaman Tools'"
+    nombre ← INPUT("Ingrese su nombre de usuario: ")
+    contraseña ← INPUT("Ingrese su contraseña: ")
+    
+    rol ← iniciar_sesion(nombre, contraseña)
+    SI rol ES IGUAL A 'admin'
+        menu_admin()
+    SINO SI rol ES IGUAL A 'vendedor'
+        menu_vendedor()
+    SINO
+        IMPRIMIR "Credenciales incorrectas. Inténtelo de nuevo."
+    FIN SI
+FIN FUNCIÓN
+
+FUNCIÓN menu_admin()
+    HACER MIENTRAS VERDADERO
+        IMPRIMIR opciones del menú Admin
+        opcion ← INPUT("Seleccione una opción: ")
+        SEGÚN opcion
+            CASO '1': registrar_usuario(...)
+            CASO '2': agregar_actualizar_producto(...)
+            CASO '3': consultar_inventario()
+            CASO '4': comprar_producto(...)
+            CASO '5': resumen_ventas()
+            CASO '6': SALIR DEL BUCLE
+            CASO CONTRARIO: IMPRIMIR "Opción no válida."
+        FIN SEGÚN
+    FIN HACER
+FIN FUNCIÓN
+
+FUNCIÓN menu_vendedor()
+    HACER MIENTRAS VERDADERO
+        IMPRIMIR opciones del menú Vendedor
+        opcion ← INPUT("Seleccione una opción: ")
+        SEGÚN opcion
+            CASO '1': consultar_inventario()
+            CASO '2': vender_producto(...)
+            CASO '3': SALIR DEL BUCLE
+            CASO CONTRARIO: IMPRIMIR "Opción no válida."
+        FIN SEGÚN
+    FIN HACER
+FIN FUNCIÓN
+
+menu_principal()
+
+FIN
